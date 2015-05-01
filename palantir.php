@@ -8,6 +8,11 @@ if(ENABLE_CROSS_SITE) {
     ob_flush();
 }
 
+echo "DEBUG: ";
+var_dump($_SERVER);
+var_dump($_GET);
+var_dump($_POST);
+
 echo "Start ";
 
 // If we're not an obvious AJAX request, then redirect to REDIRECT_URL
