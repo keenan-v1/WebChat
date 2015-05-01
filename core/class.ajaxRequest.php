@@ -27,6 +27,7 @@ class AjaxRequest {
     private $requestData = array();
     private $serverData = array();
     private $requestType = self::TYPE_POST;
+    private $requestAction = "";
     
     public function __construct($requestType, $requestData, $serverData = null) {
         switch($requestType) {
@@ -46,16 +47,18 @@ class AjaxRequest {
             $this->serverData = $serverData;
         else
             throw new Exception("No Server Data or invalid data: ", $serverData);
+
+        if(!isset($this->requestData['action']) || empty($this->requestData['action']))
+            throw new Exception("No action in request.");
+        else
+            $this->requestAction = $this->requestData['action'];
+
+        if(!array_key_exists($this->requestAction, self::$actions))
+            throw new Exception("Unsupported Action: ".$this->requestAction);
     }
     
-    public function processRequest($requestData) {
-        var $action = "", $handler = "";
-        
-        //Check to see if the action is supported
-        if(array_key_exists(($action = $requestData['action'])))
-            var $handler = self::$actions[$action];
-        else
-            throw new Exception("No handler for action: {$action}");
+    public function processRequest() {
+        $handler = self::$actions[$this->requestAction];
         
         // Handle it!
         $this->$handler();
@@ -77,7 +80,7 @@ class AjaxRequest {
     
     // Encode our data as JSON and send it.
     public function writeJson() {
-        var $replyJson = json_encode($this->replyData);
+        $replyJson = json_encode($this->replyData);
         echo $replyJson;
         return;        
     }
@@ -87,7 +90,7 @@ class AjaxRequest {
         switch($this->replyType) {
             case self::TYPE_JSON:
                 $this->writeJson();
-                break
+                break;
             default:
                 throw new Exception("Unsupported data type: ".$this->replyType);
         }
