@@ -14,6 +14,7 @@ class AjaxRequest {
     
     // Reply Types
     const TYPE_JSON = "JSON";
+    const TYPE_PLAIN = "text/plain";
     
     // Request Types
     const TYPE_GET = "GET";
