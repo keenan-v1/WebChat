@@ -18,6 +18,7 @@ class AjaxRequest {
     // Request Types
     const TYPE_GET = "GET";
     const TYPE_POST = "POST";
+    const TYPE_OPTIONS = "OPTIONS";
     
     // Reply Data
     private $replyData = array();
@@ -37,6 +38,10 @@ class AjaxRequest {
             case self::TYPE_POST:
                 $this->requestType = self::TYPE_POST;
                 break;
+            case self::TYPE_OPTIONS:
+                $this->requestType = self::TYPE_OPTIONS;
+                $this->write();
+                return;
             default:
                 throw new Exception("Invalid Request Type: {$requestType}");
         }
@@ -58,11 +63,11 @@ class AjaxRequest {
     }
     
     public function processRequest() {
-        $handler = self::$actions[$this->requestAction];
-        
-        // Handle it!
-        $this->$handler();
-        
+        if($this->requestType != self::TYPE_OPTIONS) {
+            $handler = self::$actions[$this->requestAction];
+            // Handle it!
+            $this->$handler();
+        }
         // Write output back to requester
         $this->write();
     }
@@ -101,7 +106,7 @@ class AjaxRequest {
     public function test_function() {
         $this->setData("test-result", "passed");
         $this->setData("requestType", $this->requestType);
-        $this->setData("requestData", $this->requestData);
+        $this->setData("requestData", json_encode($this->requestData));
     }
     
     public function echo_function() {
